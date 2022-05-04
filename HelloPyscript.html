@@ -1,0 +1,65 @@
+<HTML>
+<head>
+<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+</head>
+<py-env>
+ - altair
+ - numpy
+ - pandas
+ - scikit-learn 
+</py-env>
+
+
+<BODY>
+ 
+		
+<py-script>
+import asyncio
+import numpy as np
+import pandas as pd
+#import scikit-learn as sklearn
+
+import os
+from pyodide.http import open_url
+		
+cwd= os.getcwd()
+print(f"Your current directory is", cwd);
+
+
+# Importing the dataset
+url = 'http://localhost:9000/salary_data.csv'
+#url = 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-28/penguins.csv'
+#resp = open_url(url)
+#print (resp)
+		
+
+dataset = pd.read_csv(open_url(url))
+print(f"Salary data downloaded...")
+X = dataset.iloc[:, :-1].values #get a copy of dataset exclude last column
+y = dataset.iloc[:, 1].values #get array of dataset in column 1st
+
+# Splitting the dataset into the Training set and Test set
+from sklearn.model_selection import train_test_split 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1/3, random_state=0)
+
+
+# Fitting Simple Linear Regression to the Training set
+from sklearn.linear_model import LinearRegression
+regressor = LinearRegression()
+regressor.fit(X_train, y_train)
+print(f"Model is trained...")
+
+# Predicting the Test set results
+y_pred = regressor.predict(X_test)
+objzip = zip(X_test,y_pred)
+lstzip = list(objzip)
+
+print(f"=====Inferencing the Trained Model for Predictions=======")
+print(f"Pedicted Salaies : {y_pred}")
+
+</py-script> 
+
+
+</BODY>
+</HTML>
